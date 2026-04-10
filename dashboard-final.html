@@ -224,7 +224,7 @@ function dk(d){return d.toISOString().slice(0,10);}
 function fmtDate(d){const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];return `${DN[d.getDay()]} ${d.getDate()} ${d.getMonth()===3?'Apr':'May'}`;}
 function isToday(d){const t=new Date();return d.getDate()===t.getDate()&&d.getMonth()===t.getMonth();}
 function flash(){const f=document.getElementById('sf');f.classList.add('show');clearTimeout(f._t);f._t=setTimeout(()=>f.classList.remove('show'),1200);}
-function showTab(id,btn){document.querySelectorAll('.section').forEach(s=>s.style.display='none');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).style.display='block';btn.classList.add('active');}
+function showTab(id,btn){document.querySelectorAll('.section').forEach(id,btn){document.querySelectorAll('.section').forEach(s=>s.style.display='none');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).style.display='block';btn.classList.add('active');}
 async function fbSet(path,val){try{await set(ref(db,path),val);flash();}catch(e){console.error(e);}}
 function makeTC(val,onSave){
   const states=['blank','done','fail'],icons={blank:'—',done:'✓',fail:'✗'};
