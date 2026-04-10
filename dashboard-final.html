@@ -6,14 +6,7 @@
 <title>Lipsi's Lock In</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #fdf6f0; --card: #ffffff; --border: #f0e0d6; --border2: #e8d5c8;
-  --pink: #e8748a; --pink-soft: #fde8ed; --purple: #9b7fe8; --purple-soft: #f0ebff;
-  --gold: #d4943a; --gold-soft: #fff8ec; --teal: #3aada8; --teal-soft: #edfaf9;
-  --blue: #5b8dee; --blue-soft: #eef4ff; --green: #5daa80; --green-soft: #edfaf3;
-  --red: #e05c5c; --red-soft: #fff0f0; --text: #2d2040; --muted: #9b8fa8;
-  --dim: #e8dff0; --shadow: 0 2px 16px rgba(155,127,232,0.08);
-}
+:root{--bg:#fdf6f0;--card:#ffffff;--border:#f0e0d6;--border2:#e8d5c8;--pink:#e8748a;--pink-soft:#fde8ed;--purple:#9b7fe8;--purple-soft:#f0ebff;--gold:#d4943a;--gold-soft:#fff8ec;--teal:#3aada8;--teal-soft:#edfaf9;--blue:#5b8dee;--blue-soft:#eef4ff;--green:#5daa80;--green-soft:#edfaf3;--red:#e05c5c;--red-soft:#fff0f0;--text:#2d2040;--muted:#9b8fa8;--dim:#e8dff0;--shadow:0 2px 16px rgba(155,127,232,0.08);}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:80px;}
 #loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:12px;}
@@ -26,7 +19,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 .nav-btn.active{color:var(--purple);border-bottom-color:var(--purple);}
 .section{display:none;padding:18px 14px;max-width:960px;margin:0 auto;}
 .hero{text-align:center;padding:28px 16px 18px;position:relative;}
-.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:400px;height:180px;background:radial-gradient(ellipse,rgba(155,127,232,0.12) 0%,transparent 70%);pointer-events:none;}
 .eyebrow{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
 .hero h1{font-family:'Playfair Display',serif;font-size:clamp(28px,7vw,50px);font-weight:900;line-height:1.05;background:linear-gradient(135deg,#9b7fe8 0%,#e8748a 55%,#d4943a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
 .hero-sub{color:var(--muted);font-size:11px;}
@@ -83,11 +75,11 @@ tr:hover .sc{background:var(--bg);}
 <body>
 <div id="loading"><div class="spin"></div><p>Connecting to live sync...</p></div>
 <nav class="nav" id="main-nav" style="display:none">
-  <button class="nav-btn active" onclick="showTab('home',this)">🏠 Home</button>
-  <button class="nav-btn" onclick="showTab('habits',this)">✅ Habits</button>
-  <button class="nav-btn" onclick="showTab('schedule',this)">⏱️ Schedule</button>
-  <button class="nav-btn" onclick="showTab('mocks',this)">📝 Mocks</button>
-  <button class="nav-btn" onclick="showTab('chapters',this)">📖 Chapters</button>
+  <button class="nav-btn" id="btn-home" onclick="showTab('home')">🏠 Home</button>
+  <button class="nav-btn" id="btn-habits" onclick="showTab('habits')">✅ Habits</button>
+  <button class="nav-btn" id="btn-schedule" onclick="showTab('schedule')">⏱️ Schedule</button>
+  <button class="nav-btn" id="btn-mocks" onclick="showTab('mocks')">📝 Mocks</button>
+  <button class="nav-btn" id="btn-chapters" onclick="showTab('chapters')">📖 Chapters</button>
 </nav>
 <div id="tab-home" class="section">
   <div class="hero">
@@ -167,11 +159,7 @@ tr:hover .sc{background:var(--bg);}
   <div class="sec-title">📝 Mock Test Log</div>
   <div class="sec-sub">30 mocks · Phy /50 · Chem /50 · Maths /100 · Total /200</div>
   <div class="card" style="padding:12px;">
-    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">
-      Avg: <span id="mock-avg" style="color:var(--gold);font-weight:700">—</span> &nbsp;|&nbsp;
-      Best: <span id="mock-best" style="color:var(--teal);font-weight:700">—</span> &nbsp;|&nbsp;
-      Done: <span id="mock-done-c" style="color:var(--purple);font-weight:700">0</span>/30
-    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Avg: <span id="mock-avg" style="color:var(--gold);font-weight:700">—</span> &nbsp;|&nbsp; Best: <span id="mock-best" style="color:var(--teal);font-weight:700">—</span> &nbsp;|&nbsp; Done: <span id="mock-done-c" style="color:var(--purple);font-weight:700">0</span>/30</div>
     <div class="tbl-wrap"><table>
       <thead><tr><th style="width:24px;">#</th><th>Date</th><th>Total</th><th>Phy</th><th>Chem</th><th>Maths</th><th>Analysed</th></tr></thead>
       <tbody id="mock-body"></tbody>
@@ -198,15 +186,7 @@ tr:hover .sc{background:var(--bg);}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyDdKnc20A_xc_Z6_qukR3gsHvPuM3X1jlo",
-  authDomain: "lipsi-dashboard.firebaseapp.com",
-  databaseURL: "https://lipsi-dashboard-default-rtdb.firebaseio.com",
-  projectId: "lipsi-dashboard",
-  storageBucket: "lipsi-dashboard.firebasestorage.app",
-  messagingSenderId: "763031896042",
-  appId: "1:763031896042:web:ebfe94f23e99dd258b3c93"
-};
+const firebaseConfig={apiKey:"AIzaSyDdKnc20A_xc_Z6_qukR3gsHvPuM3X1jlo",authDomain:"lipsi-dashboard.firebaseapp.com",databaseURL:"https://lipsi-dashboard-default-rtdb.firebaseio.com",projectId:"lipsi-dashboard",storageBucket:"lipsi-dashboard.firebasestorage.app",messagingSenderId:"763031896042",appId:"1:763031896042:web:ebfe94f23e99dd258b3c93"};
 const app=initializeApp(firebaseConfig);
 const db=getDatabase(app);
 const TOTAL=32,START=new Date(2026,3,10),END=new Date(2026,4,12);
@@ -224,7 +204,14 @@ function dk(d){return d.toISOString().slice(0,10);}
 function fmtDate(d){const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];return `${DN[d.getDay()]} ${d.getDate()} ${d.getMonth()===3?'Apr':'May'}`;}
 function isToday(d){const t=new Date();return d.getDate()===t.getDate()&&d.getMonth()===t.getMonth();}
 function flash(){const f=document.getElementById('sf');f.classList.add('show');clearTimeout(f._t);f._t=setTimeout(()=>f.classList.remove('show'),1200);}
-function showTab(id,btn){document.querySelectorAll('.section').forEach(id,btn){document.querySelectorAll('.section').forEach(s=>s.style.display='none');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).style.display='block';btn.classList.add('active');}
+
+function showTab(id){
+  document.querySelectorAll('.section').forEach(s=>{s.style.display='none';});
+  document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.remove('active');});
+  document.getElementById('tab-'+id).style.display='block';
+  document.getElementById('btn-'+id).classList.add('active');
+}
+
 async function fbSet(path,val){try{await set(ref(db,path),val);flash();}catch(e){console.error(e);}}
 function makeTC(val,onSave){
   const states=['blank','done','fail'],icons={blank:'—',done:'✓',fail:'✗'};
@@ -339,10 +326,10 @@ onValue(ref(db,'/'),snapshot=>{
   renderHabits();renderSchedule();renderMocks();renderChapters();updateHome();
   document.getElementById('loading').style.display='none';
   document.getElementById('main-nav').style.display='flex';
-  document.getElementById('tab-home').style.display='block';
+  showTab('home');
 },err=>{
-  document.getElementById('loading').innerHTML='<p style="color:var(--red);padding:20px;text-align:center;">Connection failed.<br>Check Firebase config.</p>';
+  document.getElementById('loading').innerHTML='<p style="color:var(--red);padding:20px;text-align:center;">Connection failed.</p>';
 });
 </script>
-</body>
-</html>
+</body 
+</html> rk! 🙏
