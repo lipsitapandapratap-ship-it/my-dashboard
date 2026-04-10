@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lipsi's Command Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fdf6f0;
+  --bg2: #fff9f6;
+  --card: #ffffff;
+  --border: #f0e0d6;
+  --border2: #e8d5c8;
+  --pink: #e8748a;
+  --pink-soft: #fde8ed;
+  --pink-light: #fff0f3;
+  --purple: #9b7fe8;
+  --purple-soft: #f0ebff;
+  --gold: #d4943a;
+  --gold-soft: #fff8ec;
+  --teal: #3aada8;
+  --teal-soft: #edfaf9;
+  --blue: #5b8dee;
+  --blue-soft: #eef4ff;
+  --green: #5daa80;
+  --green-soft: #edfaf3;
+  --red: #e05c5c;
+  --red-soft: #fff0f0;
+  --text: #2d2040;
+  --muted: #9b8fa8;
+  --dim: #e8dff0;
+  --shadow: 0 2px 16px rgba(155,127,232,0.08);
+  --shadow2: 0 4px 24px rgba(155,127,232,0.13);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:80px;}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(253,246,240,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 12px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-btn{flex-shrink:0;padding:13px 14px;font-size:11.5px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;letter-spacing:0.03em;white-space:nowrap;}
+.nav-btn.active{color:var(--purple);border-bottom-color:var(--purple);}
+.nav-btn:hover{color:var(--text);}
+
+/* SECTIONS */
+.section{display:none;padding:20px 14px;max-width:960px;margin:0 auto;}
+.section.active{display:block;}
+
+/* HERO */
+.hero{text-align:center;padding:32px 16px 20px;position:relative;}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:400px;height:200px;background:radial-gradient(ellipse,rgba(155,127,232,0.1) 0%,transparent 70%);pointer-events:none;}
+.eyebrow{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(30px,7vw,52px);font-weight:900;line-height:1.05;background:linear-gradient(135deg,#9b7fe8 0%,#e8748a 55%,#d4943a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.hero-sub{color:var(--muted);font-size:12px;letter-spacing:0.04em;}
+
+/* COUNTDOWN */
+.countdown{display:flex;justify-content:center;gap:10px;margin:20px auto 0;max-width:340px;}
+.count-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center;flex:1;box-shadow:var(--shadow);}
+.count-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,#9b7fe8,#e8748a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.count-lbl{font-size:9px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.1em;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);}
+.card-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px;color:var(--text);}
+.sec-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.sec-sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
+
+/* PROGRESS BAR */
+.prog-wrap{background:var(--dim);border-radius:100px;height:6px;overflow:hidden;margin:6px 0;}
+.prog-bar{height:100%;border-radius:100px;transition:width 0.5s ease;}
+
+/* STAT GRID HOME */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow);}
+.stat-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;line-height:1;}
+.stat-lbl{font-size:9px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.08em;}
+.stat-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* ======= TABLES (shared style) ======= */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;font-size:11.5px;min-width:500px;}
+th{background:var(--bg);padding:9px 8px;text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;border-bottom:2px solid var(--border2);border-right:1px solid var(--border);white-space:nowrap;}
+th:first-child{text-align:left;border-left:none;}
+td{padding:7px 8px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);text-align:center;vertical-align:middle;}
+td:first-child{text-align:left;border-left:none;font-weight:500;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg);}
+
+/* TICK/CROSS CELL */
+.tc{cursor:pointer;user-select:none;font-size:15px;width:32px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;margin:0 auto;transition:background 0.15s;}
+.tc:hover{background:var(--dim);}
+.tc.done{color:var(--green);background:var(--green-soft);}
+.tc.fail{color:var(--red);background:var(--red-soft);}
+.tc.blank{color:var(--dim);}
+
+/* TICK ONLY CELL (chapters) */
+.tk{cursor:pointer;user-select:none;font-size:14px;width:28px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;margin:0 auto;transition:all 0.15s;}
+.tk:hover{background:var(--dim);}
+.tk.done{color:var(--purple);background:var(--purple-soft);}
+
+/* INPUT CELL */
+.cell-input{background:transparent;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:11.5px;color:var(--text);text-align:center;width:100%;padding:2px 4px;}
+.cell-input::placeholder{color:var(--dim);}
+
+/* DATE COL */
+.date-col{font-size:10px;color:var(--muted);font-weight:600;white-space:nowrap;min-width:70px;}
+
+/* STICKY FIRST COL */
+.sticky-col{position:sticky;left:0;background:var(--card);z-index:2;border-right:2px solid var(--border2)!important;}
+tr:hover .sticky-col{background:var(--bg);}
+
+/* LEGEND */
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border);}
+.legend span{display:flex;align-items:center;gap:4px;}
+
+/* AFFIRMATION */
+.aff-card{background:linear-gradient(135deg,#f8f0ff,#fff0f8);border:1px solid #e8d5f5;border-radius:14px;padding:20px;text-align:center;margin-bottom:14px;}
+.aff-card p{font-family:'Playfair Display',serif;font-size:15px;line-height:1.6;color:var(--text);}
+.aff-card .asub{font-size:10px;color:var(--muted);margin-top:8px;}
+
+/* VISION INPUT */
+.vi{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;resize:vertical;min-height:72px;outline:none;transition:border-color 0.2s;}
+.vi:focus{border-color:var(--purple);}
+.vi-label{font-size:10px;color:var(--muted);margin-bottom:5px;margin-top:12px;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;}
+
+/* SCHEDULE CARD */
+.sch-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.sch-row:last-child{border-bottom:none;}
+.sch-time{color:var(--purple);font-weight:600;width:118px;flex-shrink:0;font-size:10.5px;}
+.sch-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+/* SAVE FLASH */
+#save-flash{position:fixed;bottom:20px;right:20px;background:var(--green);color:white;font-size:11px;font-weight:700;padding:7px 14px;border-radius:100px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;}
+#save-flash.show{opacity:1;}
+
+/* DIVIDER */
+.divider{display:flex;align-items:center;gap:10px;margin:18px 0 14px;}
+.divider span{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;white-space:nowrap;}
+.divider-line{flex:1;height:1px;background:var(--border);}
+
+/* TAG */
+.tag{display:inline-flex;align-items:center;font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:100px;letter-spacing:0.05em;text-transform:uppercase;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('home',this)">🏠 Home</button>
+  <button class="nav-btn" onclick="showTab('habits',this)">✅ Habits</button>
+  <button class="nav-btn" onclick="showTab('schedule',this)">⏱️ Schedule</button>
+  <button class="nav-btn" onclick="showTab('mocks',this)">📝 Mocks</button>
+  <button class="nav-btn" onclick="showTab('chapters',this)">📖 Chapters</button>
+  <button class="nav-btn" onclick="showTab('instagram',this)">📸 Instagram</button>
+  <button class="nav-btn" onclick="showTab('manifest',this)">🌙 Manifest</button>
+</nav>
+
+<!-- ===== HOME ===== -->
+<div id="tab-home" class="section active">
+  <div class="hero">
+    <div class="eyebrow">✦ Lipsi's Command Centre ✦</div>
+    <h1>The Lock In</h1>
+    <div class="hero-sub">10 April – 12 May 2026 · COEP 160+ · 32 Days</div>
+    <div class="countdown">
+      <div class="count-block"><div class="count-num" id="days-left">—</div><div class="count-lbl">Days Left</div></div>
+      <div class="count-block"><div class="count-num" id="days-done">—</div><div class="count-lbl">Done</div></div>
+      <div class="count-block"><div class="count-num" id="pct-done">—</div><div class="count-lbl">% Done</div></div>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num" style="color:var(--purple)" id="h-habits">0</div><div class="stat-lbl">Perfect Days</div><div class="stat-sub">all habits ✓</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--gold)" id="h-mocks">0</div><div class="stat-lbl">Mocks Done</div><div class="stat-sub">of 30</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--teal)" id="h-chapters">0</div><div class="stat-lbl">Chapters</div><div class="stat-sub">of 53</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--pink)" id="h-gym">0</div><div class="stat-lbl">Gym Days</div><div class="stat-sub">of 32</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📈 Progress Overview</div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Habits streak</div>
+    <div class="prog-wrap"><div class="prog-bar" id="prog-habits" style="background:linear-gradient(90deg,var(--purple),var(--pink));width:0%"></div></div>
+    <div style="font-size:10px;color:var(--muted);margin:8px 0 4px;">Chapters covered</div>
+    <div class="prog-wrap"><div class="prog-bar" id="prog-chapters" style="background:linear-gradient(90deg,var(--teal),var(--blue));width:0%"></div></div>
+    <div style="font-size:10px;color:var(--muted);margin:8px 0 4px;">Mocks completed</div>
+    <div class="prog-wrap"><div class="prog-bar" id="prog-mocks" style="background:linear-gradient(90deg,var(--gold),var(--pink));width:0%"></div></div>
+  </div>
+
+  <div class="aff-card"><p id="home-aff"></p><div class="asub">✦ Today's Affirmation ✦</div></div>
+</div>
+
+<!-- ===== HABITS ===== -->
+<div id="tab-habits" class="section">
+  <div class="sec-title">✅ Habit Tracker</div>
+  <div class="sec-sub">Rows = dates · Columns = habits · Click once ✓, again ✗, again blank</div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table id="habit-table">
+        <thead>
+          <tr>
+            <th class="sticky-col" style="min-width:80px;">Date</th>
+            <th>🌅<br>Wake Early</th>
+            <th>📚<br>12h Study</th>
+            <th>📋<br>Routine</th>
+            <th>📖<br>Self Help</th>
+            <th>🙏<br>Affirmation</th>
+            <th>🕌<br>Prayers</th>
+            <th>❓<br>200+ Qs</th>
+            <th>📑<br>3 Chapters</th>
+            <th>🏋️<br>Gym</th>
+          </tr>
+        </thead>
+        <tbody id="habit-body"></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <span><span style="color:var(--green);font-size:13px">✓</span> Done</span>
+      <span><span style="color:var(--red);font-size:13px">✗</span> Not done</span>
+      <span><span style="color:var(--dim);font-size:13px">—</span> Not marked yet</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCHEDULE ===== -->
+<div id="tab-schedule" class="section">
+  <div class="sec-title">⏱️ Daily Schedule</div>
+  <div class="sec-sub">Rows = dates · Tick each block as you complete it daily</div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table id="schedule-table">
+        <thead>
+          <tr>
+            <th class="sticky-col" style="min-width:80px;">Date</th>
+            <th>6–9AM<br>Study</th>
+            <th>9:30–12<br>Study</th>
+            <th>12:45–1:45<br>Study</th>
+            <th>3–4PM<br>Study</th>
+            <th>4–5PM<br>Gym</th>
+            <th>5–5:45<br>Prayers</th>
+            <th>5:45–7<br>Study</th>
+            <th>7:45–12:20<br>Pomodoro</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body"></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <span><span style="color:var(--green);font-size:13px">✓</span> Done</span>
+      <span><span style="color:var(--red);font-size:13px">✗</span> Missed</span>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px;">
+    <div class="card-title">📋 Full Schedule Reference</div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--blue)"></div><div class="sch-time">6:00 – 9:00 AM</div><div>📚 Deep study block</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--pink)"></div><div class="sch-time">9:00 – 9:30 AM</div><div>🍳 Breakfast</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--blue)"></div><div class="sch-time">9:30 – 12:00 PM</div><div>📚 Study session</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--gold)"></div><div class="sch-time">12:00 – 12:45 PM</div><div>🛁 Bath + break 🍭</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--blue)"></div><div class="sch-time">12:45 – 1:45 PM</div><div>📚 Study block</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--pink)"></div><div class="sch-time">1:45 – 2:50 PM</div><div>🍱 Lunch</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--teal)"></div><div class="sch-time">2:50 – 3:00 PM</div><div>😴 Power nap</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--blue)"></div><div class="sch-time">3:00 – 4:00 PM</div><div>📚 Study block</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--pink)"></div><div class="sch-time">4:00 – 5:00 PM</div><div>🏋️ Gym</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--purple)"></div><div class="sch-time">5:00 – 5:45 PM</div><div>🙏 Affirmations + Prayers + Book</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--blue)"></div><div class="sch-time">5:45 – 7:00 PM</div><div>📚 Study block</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--pink)"></div><div class="sch-time">7:00 – 7:45 PM</div><div>🍽️ Dinner</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--purple)"></div><div class="sch-time">7:45 – 12:20 AM</div><div>🍅 Pomodoro night session (50+5) 🍭 break at 11:20</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--pink)"></div><div class="sch-time">12:30 AM</div><div>😴 Sleep — protect this</div></div>
+  </div>
+</div>
+
+<!-- ===== MOCKS ===== -->
+<div id="tab-mocks" class="section">
+  <div class="sec-title">📝 Mock Test Log</div>
+  <div class="sec-sub">30 mocks · Phy /50 · Chem /50 · Maths /100 · Total /200 · Goal: 160+</div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--muted)">Avg: <span id="mock-avg" style="color:var(--gold);font-weight:700">—</span> &nbsp;|&nbsp; Best: <span id="mock-best" style="color:var(--teal);font-weight:700">—</span> &nbsp;|&nbsp; Done: <span id="mock-done-count" style="color:var(--purple);font-weight:700">0</span>/30</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:32px;">#</th>
+            <th>Date</th>
+            <th>Total<br>/200</th>
+            <th>Phy<br>/50</th>
+            <th>Chem<br>/50</th>
+            <th>Maths<br>/100</th>
+            <th>Analysed?</th>
+          </tr>
+        </thead>
+        <tbody id="mock-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHAPTERS ===== -->
+<div id="tab-chapters" class="section">
+  <div class="sec-title">📖 Chapter Checklist</div>
+  <div class="sec-sub"><span id="chap-count" style="color:var(--teal);font-weight:700">0 / 53</span> chapters fully completed</div>
+  <div class="card">
+    <div class="prog-wrap" style="margin-bottom:14px;"><div class="prog-bar" id="chap-prog" style="background:linear-gradient(90deg,var(--teal),var(--blue));width:0%"></div></div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:10px;">Tick each column as you complete it. A chapter is done when all 5 boxes are ticked ✓</div>
+    <div class="tbl-wrap">
+      <table id="chap-table">
+        <thead>
+          <tr>
+            <th style="width:30px;">#</th>
+            <th class="sticky-col" style="min-width:130px;text-align:left;">Chapter</th>
+            <th>Brief<br>Idea</th>
+            <th>2025<br>PYQ</th>
+            <th>2024<br>PYQ</th>
+            <th>Digital<br>NB</th>
+            <th>Revision</th>
+          </tr>
+        </thead>
+        <tbody id="chap-body"></tbody>
+      </table>
+    </div>
+    <div class="legend"><span><span style="color:var(--purple);font-size:13px">✓</span> Done</span><span><span style="color:var(--dim);font-size:13px">○</span> Pending</span></div>
+  </div>
+</div>
+
+<!-- ===== INSTAGRAM ===== -->
+<div id="tab-instagram" class="section">
+  <div class="sec-title">📸 Instagram Tracker</div>
+  <div class="sec-sub">30-day reel streak · 1 reel per day · Private — not shared</div>
+  <div class="card">
+    <div class="card-title" style="color:var(--pink)">🎬 30-Day Reel Streak</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">Tap a day to mark reel posted · <span id="ig-count" style="color:var(--pink);font-weight:700">0</span>/30 reels posted</div>
+    <div class="prog-wrap"><div class="prog-bar" id="ig-prog" style="background:linear-gradient(90deg,var(--pink),var(--purple));width:0%"></div></div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px;" id="ig-grid"></div>
+    <div class="legend"><span><span style="color:var(--pink);font-size:13px">🎬</span> Reel posted</span><span><span style="color:var(--dim);font-size:11px">○</span> Not yet</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--purple)">🎯 Instagram Goals</div>
+    <textarea class="vi" id="ig-goals" placeholder="Your Instagram goals, content ideas, growth targets..." onchange="sv('ig-goals',this.value)"></textarea>
+  </div>
+</div>
+
+<!-- ===== MANIFEST ===== -->
+<div id="tab-manifest" class="section">
+  <div class="sec-title">🌙 Manifestation Planner</div>
+  <div class="sec-sub">Private · Your vision, affirmations & intentions</div>
+  <div class="aff-card"><p id="mani-aff"></p><div class="asub">✦ Today's Affirmation ✦</div></div>
+  <div class="card">
+    <div class="card-title" style="color:var(--purple)">✨ My Affirmations</div>
+    <textarea class="vi" id="my-affirmations" placeholder="I am... I have... I attract..." onchange="sv('my-affirmations',this.value)" style="min-height:100px;"></textarea>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--pink)">🎯 My Vision — COEP & Beyond</div>
+    <div class="vi-label">My COEP dream looks like...</div>
+    <textarea class="vi" id="vision-coep" placeholder="Describe your COEP dream..." onchange="sv('vision-coep',this.value)"></textarea>
+    <div class="vi-label">My life at 21 looks like...</div>
+    <textarea class="vi" id="vision-life" placeholder="Where are you? What are you doing?" onchange="sv('vision-life',this.value)"></textarea>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--gold)">🌙 Tonight's Intention</div>
+    <textarea class="vi" id="tonight" placeholder="Before you sleep, set your intention for tomorrow..." onchange="sv('tonight',this.value)" style="min-height:70px;"></textarea>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--teal)">🙏 Gratitude Today</div>
+    <textarea class="vi" id="gratitude" placeholder="3 things you're grateful for today..." onchange="sv('gratitude',this.value)" style="min-height:70px;"></textarea>
+  </div>
+</div>
+
+<div id="save-flash">✓ Saved</div>
+
+<script>
+// ======= CONSTANTS =======
+const TOTAL = 32;
+const START = new Date(2026,3,10);
+const END   = new Date(2026,4,12);
+
+const HABITS = ['Wake Early','12h Study','Routine','Self Help','Affirmation','Prayers','200+ Qs','3 Chapters','Gym'];
+const HABIT_KEYS = ['wake','study12','routine','selfhelp','affirmation','prayers','200q','3chap','gym'];
+
+const SCH_COLS = ['6–9AM Study','9:30–12 Study','12:45–1:45 Study','3–4PM Study','4–5PM Gym','5–5:45 Prayers','5:45–7 Study','7:45–12:20 Pomodoro'];
+const SCH_KEYS = ['s1','s2','s3','s4','s5','s6','s7','s8'];
+
+const PHY = ['Motion in 1D','Motion in 2D','Laws of Motion','Work & Energy','Rotational Motion','Gravitation','Properties of Matter','SHM','Waves','Thermal Properties','Thermodynamics','Kinetic Theory','Electric Charges','Electric Potential','Current Electricity','Magnetic Effects','Magnetism','EMI','AC Circuits','EM Waves','Ray Optics','Wave Optics','Dual Nature','Atoms & Nuclei'];
+const CHEM = ['States of Matter','Atomic Structure','Chemical Bonding','Thermodynamics','Equilibrium','Redox Reactions','Hydrogen','s-Block','p-Block I','p-Block II','Organic Basics','Hydrocarbons','Environmental Chem','Solutions','Electrochemistry','Chemical Kinetics','Surface Chemistry','Coordination Compounds','Aldehydes & Ketones','Carboxylic Acids','Amines','Biomolecules'];
+const MATH = ['Sets & Relations','Complex Numbers','Matrices','Determinants','Permutations','Probability','Limits','Differentiation','Integration','Differential Equations','Vectors','3D Geometry','Straight Lines','Circles','Conics','Trigonometry'];
+const ALL_CHAPTERS = [
+  ...PHY.map(n=>({name:n,sub:'phy'})),
+  ...CHEM.map(n=>({name:n,sub:'chem'})),
+  ...MATH.map(n=>({name:n,sub:'math'}))
+];
+
+const AFFS = [
+  '"I am the girl who chooses herself every single day. COEP is not a dream — it is already mine."',
+  '"Every formula I write is a step closer to my name on that list. I was made for this."',
+  '"I do not quit. I do not negotiate with laziness. I show up, every single day."',
+  '"160+ is already decided. I am just showing up to collect what belongs to me."',
+  '"The girl who studies at 6 AM when no one is watching — that is the girl who wins."',
+  '"Consistency over perfection. One block at a time. I will get there."',
+  '"My future self is watching. I will not let her down."',
+  '"Hard days are proof that I am doing something worth doing."',
+  '"She believed she could, so she did. And she is me."',
+];
+
+// ======= STORAGE =======
+const PFX = 'lipsi2_';
+function sv(k,v){try{localStorage.setItem(PFX+k,JSON.stringify(v));flash();}catch(e){}}
+function ld(k,d){try{const v=localStorage.getItem(PFX+k);return v!==null?JSON.parse(v):d;}catch(e){return d;}}
+function flash(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(f._t);f._t=setTimeout(()=>f.classList.remove('show'),1200);}
+
+// ======= TABS =======
+function showTab(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ======= DATES HELPER =======
+function getDates(){
+  const dates=[];
+  for(let i=0;i<TOTAL;i++){
+    const d=new Date(START);
+    d.setDate(d.getDate()+i);
+    dates.push(d);
+  }
+  return dates;
+}
+function fmtDate(d){
+  const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MN=['Apr','Apr','Apr','Apr','Apr','Apr','May','May','May','May','May','May'];
+  return `${DN[d.getDay()]} ${d.getDate()} ${d.getMonth()===3?'Apr':'May'}`;
+}
+function isToday(d){const t=new Date();return d.getDate()===t.getDate()&&d.getMonth()===t.getMonth();}
+function dateKey(d){return d.toISOString().slice(0,10);}
+
+// ======= TC CELL (3-state: blank→done→fail→blank) =======
+function makeTCCell(storeKey, subKey, onChange){
+  const states=['blank','done','fail'];
+  const icons={blank:'—',done:'✓',fail:'✗'};
+  const data=ld(storeKey,{});
+  const cur=data[subKey]||'blank';
+  const div=document.createElement('div');
+  div.className=`tc ${cur}`;
+  div.textContent=icons[cur];
+  div.onclick=()=>{
+    const d2=ld(storeKey,{});
+    const idx=states.indexOf(d2[subKey]||'blank');
+    const next=states[(idx+1)%3];
+    d2[subKey]=next;
+    sv(storeKey,d2);
+    div.className=`tc ${next}`;
+    div.textContent=icons[next];
+    if(onChange) onChange();
+  };
+  const td=document.createElement('td');
+  td.appendChild(div);
+  return td;
+}
+
+// ======= TK CELL (2-state: blank→done→blank) =======
+function makeTKCell(storeKey, subKey, onChange){
+  const data=ld(storeKey,{});
+  const done=!!(data[subKey]);
+  const div=document.createElement('div');
+  div.className=`tk ${done?'done':''}`;
+  div.textContent=done?'✓':'○';
+  div.onclick=()=>{
+    const d2=ld(storeKey,{});
+    d2[subKey]=!d2[subKey];
+    sv(storeKey,d2);
+    div.className=`tk ${d2[subKey]?'done':''}`;
+    div.textContent=d2[subKey]?'✓':'○';
+    if(onChange) onChange();
+  };
+  const td=document.createElement('td');
+  td.appendChild(div);
+  return td;
+}
+
+// ======= HABIT TABLE =======
+function buildHabitTable(){
+  const tbody=document.getElementById('habit-body');
+  tbody.innerHTML='';
+  getDates().forEach(d=>{
+    const dk=dateKey(d);
+    const row=document.createElement('tr');
+    if(isToday(d)) row.style.background='#fff8ff';
+    const dateTd=document.createElement('td');
+    dateTd.className='sticky-col date-col';
+    dateTd.textContent=fmtDate(d);
+    if(isToday(d)) dateTd.style.color='var(--purple)';
+    row.appendChild(dateTd);
+    HABIT_KEYS.forEach(hk=>{
+      row.appendChild(makeTCCell('habit_'+hk, dk, updateHome));
+    });
+    tbody.appendChild(row);
+  });
+}
+
+// ======= SCHEDULE TABLE =======
+function buildScheduleTable(){
+  const tbody=document.getElementById('schedule-body');
+  tbody.innerHTML='';
+  getDates().forEach(d=>{
+    const dk=dateKey(d);
+    const row=document.createElement('tr');
+    if(isToday(d)) row.style.background='#fff8ff';
+    const dateTd=document.createElement('td');
+    dateTd.className='sticky-col date-col';
+    dateTd.textContent=fmtDate(d);
+    if(isToday(d)) dateTd.style.color='var(--purple)';
+    row.appendChild(dateTd);
+    SCH_KEYS.forEach(sk=>{
+      row.appendChild(makeTCCell('sch_'+sk, dk, null));
+    });
+    tbody.appendChild(row);
+  });
+}
+
+// ======= MOCK TABLE =======
+function buildMockTable(){
+  const tbody=document.getElementById('mock-tbody');
+  tbody.innerHTML='';
+  const data=ld('mocks',{});
+  let scores=[],done=0;
+  for(let i=1;i<=30;i++){
+    const m=data[i]||{};
+    const sc=parseInt(m.total)||0;
+    if(sc>0){scores.push(sc);done++;}
+    const row=document.createElement('tr');
+    const numTd=document.createElement('td');
+    numTd.textContent=i;numTd.style.color='var(--muted)';numTd.style.fontSize='10px';
+    row.appendChild(numTd);
+
+    // date input
+    const fields=['date','total','phy','chem','maths'];
+    const placeholders=['dd/mm','—','—','—','—'];
+    fields.forEach((f,fi)=>{
+      const td=document.createElement('td');
+      const inp=document.createElement('input');
+      inp.className='cell-input';
+      inp.placeholder=placeholders[fi];
+      inp.value=m[f]||'';
+      inp.type=fi>0?'number':'text';
+      if(fi===1&&sc>=160) inp.style.color='var(--teal)';
+      else if(fi===1&&sc>=130&&sc<160) inp.style.color='var(--gold)';
+      else if(fi===1&&sc>0&&sc<130) inp.style.color='var(--red)';
+      inp.onchange=()=>{
+        const d2=ld('mocks',{});
+        if(!d2[i]) d2[i]={};
+        d2[i][f]=inp.value;
+        sv('mocks',d2);
+        buildMockTable();
+      };
+      td.appendChild(inp);
+      row.appendChild(td);
+    });
+
+    // analysed tick
+    const aTd=document.createElement('td');
+    const states=['blank','done','fail'];
+    const icons={blank:'—',done:'✓',fail:'✗'};
+    const aData=ld('mock_analysed',{});
+    const cur=aData[i]||'blank';
+    const aDiv=document.createElement('div');
+    aDiv.className=`tc ${cur}`;aDiv.textContent=icons[cur];
+    aDiv.style.margin='0 auto';
+    aDiv.onclick=()=>{
+      const d2=ld('mock_analysed',{});
+      const idx=states.indexOf(d2[i]||'blank');
+      d2[i]=states[(idx+1)%3];
+      sv('mock_analysed',d2);
+      aDiv.className=`tc ${d2[i]}`;aDiv.textContent=icons[d2[i]];
+    };
+    aTd.appendChild(aDiv);
+    row.appendChild(aTd);
+    tbody.appendChild(row);
+  }
+  document.getElementById('mock-done-count').textContent=done;
+  if(scores.length){
+    document.getElementById('mock-avg').textContent=Math.round(scores.reduce((a,b)=>a+b)/scores.length);
+    document.getElementById('mock-best').textContent=Math.max(...scores);
+  }
+  updateHome();
+}
+
+// ======= CHAPTER TABLE =======
+function buildChapterTable(){
+  const tbody=document.getElementById('chap-body');
+  tbody.innerHTML='';
+  const COLS=['brief','pyq25','pyq24','nb','revision'];
+  let totalDone=0;
+  ALL_CHAPTERS.forEach((ch,i)=>{
+    const storeKey='chap_'+i;
+    const row=document.createElement('tr');
+    const numTd=document.createElement('td');
+    numTd.textContent=i+1;numTd.style.color='var(--muted)';numTd.style.fontSize='10px';
+    row.appendChild(numTd);
+
+    const nameTd=document.createElement('td');
+    nameTd.className='sticky-col';
+    nameTd.style.fontSize='11px';
+    nameTd.style.fontWeight='500';
+    const badge=document.createElement('span');
+    badge.style.cssText=`font-size:8px;font-weight:700;padding:1px 5px;border-radius:100px;margin-right:5px;text-transform:uppercase;`;
+    if(ch.sub==='phy'){badge.style.background='var(--blue-soft)';badge.style.color='var(--blue)';}
+    else if(ch.sub==='chem'){badge.style.background='var(--teal-soft)';badge.style.color='var(--teal)';}
+    else{badge.style.background='var(--gold-soft)';badge.style.color='var(--gold)';}
+    badge.textContent=ch.sub==='phy'?'P':ch.sub==='chem'?'C':'M';
+    nameTd.appendChild(badge);
+    nameTd.appendChild(document.createTextNode(ch.name));
+    row.appendChild(nameTd);
+
+    let allDone=true;
+    COLS.forEach(col=>{
+      const data=ld(storeKey,{});
+      if(!data[col]) allDone=false;
+      const td=makeTKCell(storeKey, col, ()=>{
+        updateChapCount();
+        // highlight row if all done
+        const d2=ld(storeKey,{});
+        const ad=COLS.every(c=>d2[c]);
+        row.style.background=ad?'var(--green-soft)':'';
+        nameTd.style.color=ad?'var(--green)':'';
+      });
+      row.appendChild(td);
+    });
+    if(allDone){row.style.background='var(--green-soft)';nameTd.style.color='var(--green)';totalDone++;}
+    tbody.appendChild(row);
+  });
+  document.getElementById('chap-count').textContent=totalDone+' / 53';
+  document.getElementById('chap-prog').style.width=(totalDone/53*100)+'%';
+  updateHome();
+}
+function updateChapCount(){
+  const COLS=['brief','pyq25','pyq24','nb','revision'];
+  let done=0;
+  ALL_CHAPTERS.forEach((_,i)=>{
+    const d=ld('chap_'+i,{});
+    if(COLS.every(c=>d[c])) done++;
+  });
+  document.getElementById('chap-count').textContent=done+' / 53';
+  document.getElementById('chap-prog').style.width=(done/53*100)+'%';
+  document.getElementById('h-chapters').textContent=done;
+  document.getElementById('prog-chapters').style.width=(done/53*100)+'%';
+}
+
+// ======= INSTAGRAM GRID =======
+function buildIgGrid(){
+  const grid=document.getElementById('ig-grid');
+  grid.innerHTML='';
+  const data=ld('ig_reels',{});
+  let done=0;
+  for(let i=1;i<=30;i++){
+    const cell=document.createElement('div');
+    const isDone=!!data[i];
+    if(isDone) done++;
+    cell.style.cssText=`aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-weight:700;border:1px solid var(--border);transition:all 0.15s;gap:2px;`;
+    cell.style.background=isDone?'var(--pink-soft)':'var(--bg)';
+    cell.style.color=isDone?'var(--pink)':'var(--muted)';
+    cell.innerHTML=`<span style="font-size:16px">${isDone?'🎬':'○'}</span><span>Day ${i}</span>`;
+    cell.onclick=()=>{
+      const d2=ld('ig_reels',{});
+      d2[i]=!d2[i];
+      sv('ig_reels',d2);
+      buildIgGrid();
+    };
+    grid.appendChild(cell);
+  }
+  document.getElementById('ig-count').textContent=done;
+  document.getElementById('ig-prog').style.width=(done/30*100)+'%';
+}
+
+// ======= HOME STATS =======
+function updateHome(){
+  // gym days from habit tracker
+  const gymDone=getDates().filter(d=>ld('habit_gym',{})[dateKey(d)]==='done').length;
+  const mockDone=Object.values(ld('mocks',{})).filter(m=>parseInt(m.total)>0).length;
+  const COLS=['brief','pyq25','pyq24','nb','revision'];
+  const chapDone=ALL_CHAPTERS.filter((_,i)=>{const d=ld('chap_'+i,{});return COLS.every(c=>d[c]);}).length;
+  // perfect days = all 9 habits done
+  const perfectDays=getDates().filter(d=>{
+    const dk=dateKey(d);
+    return HABIT_KEYS.every(hk=>ld('habit_'+hk,{})[dk]==='done');
+  }).length;
+  document.getElementById('h-habits').textContent=perfectDays;
+  document.getElementById('h-mocks').textContent=mockDone;
+  document.getElementById('h-chapters').textContent=chapDone;
+  document.getElementById('h-gym').textContent=gymDone;
+  document.getElementById('prog-habits').style.width=(perfectDays/TOTAL*100)+'%';
+  document.getElementById('prog-chapters').style.width=(chapDone/53*100)+'%';
+  document.getElementById('prog-mocks').style.width=(mockDone/30*100)+'%';
+}
+
+// ======= COUNTDOWN =======
+function initCountdown(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const done=Math.max(0,Math.min(TOTAL,Math.round((today-START)/864e5)));
+  const left=Math.max(0,Math.round((END-today)/864e5));
+  const pct=Math.min(100,Math.round(done/TOTAL*100));
+  document.getElementById('days-left').textContent=left;
+  document.getElementById('days-done').textContent=done;
+  document.getElementById('pct-done').textContent=pct+'%';
+}
+
+// ======= AFFIRMATIONS =======
+function initAffs(){
+  const idx=new Date().getDate()%AFFS.length;
+  document.getElementById('home-aff').textContent=AFFS[idx];
+  document.getElementById('mani-aff').textContent=AFFS[idx];
+}
+
+// ======= LOAD TEXT INPUTS =======
+function loadInputs(){
+  ['ig-goals','my-affirmations','vision-coep','vision-life','tonight','gratitude'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=ld(id,'');
+  });
+}
+
+// ======= INIT =======
+initCountdown();
+initAffs();
+buildHabitTable();
+buildScheduleTable();
+buildMockTable();
+buildChapterTable();
+buildIgGrid();
+loadInputs();
+updateHome();
+</script>
+</body>
+</html>

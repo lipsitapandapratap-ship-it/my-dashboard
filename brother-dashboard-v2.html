@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lipsi's Progress — Live View</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fdf6f0;
+  --bg2: #fff9f6;
+  --card: #ffffff;
+  --border: #f0e0d6;
+  --border2: #e8d5c8;
+  --pink: #e8748a;
+  --pink-soft: #fde8ed;
+  --blue: #5b8dee;
+  --blue-soft: #eef4ff;
+  --purple: #9b7fe8;
+  --purple-soft: #f0ebff;
+  --gold: #d4943a;
+  --gold-soft: #fff8ec;
+  --teal: #3aada8;
+  --teal-soft: #edfaf9;
+  --green: #5daa80;
+  --green-soft: #edfaf3;
+  --red: #e05c5c;
+  --red-soft: #fff0f0;
+  --text: #2d2040;
+  --muted: #9b8fa8;
+  --dim: #e8dff0;
+  --shadow: 0 2px 16px rgba(155,127,232,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:60px;}
+
+.nav{position:sticky;top:0;z-index:100;background:rgba(253,246,240,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 12px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-btn{flex-shrink:0;padding:13px 14px;font-size:11.5px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;letter-spacing:0.03em;white-space:nowrap;}
+.nav-btn.active{color:var(--purple);border-bottom-color:var(--purple);}
+
+.section{display:none;padding:20px 14px;max-width:960px;margin:0 auto;}
+.section.active{display:block;}
+
+.hero{text-align:center;padding:32px 16px 20px;position:relative;}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:400px;height:200px;background:radial-gradient(ellipse,rgba(155,127,232,0.1) 0%,transparent 70%);pointer-events:none;}
+.eyebrow{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(30px,7vw,50px);font-weight:900;line-height:1.05;background:linear-gradient(135deg,#9b7fe8 0%,#e8748a 55%,#d4943a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.hero-sub{color:var(--muted);font-size:12px;}
+
+.viewer-banner{background:linear-gradient(135deg,#eef4ff,#edfaf9);border:1px solid #c8e0f8;border-radius:12px;padding:12px 16px;margin:0 14px 16px;text-align:center;font-size:12px;color:var(--blue);max-width:932px;margin-left:auto;margin-right:auto;}
+.viewer-banner strong{display:block;font-size:13px;margin-bottom:3px;color:var(--purple);}
+
+.countdown{display:flex;justify-content:center;gap:10px;margin:20px auto 0;max-width:340px;}
+.count-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center;flex:1;box-shadow:var(--shadow);}
+.count-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;background:linear-gradient(135deg,#9b7fe8,#e8748a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.count-lbl{font-size:9px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.1em;}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);}
+.card-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.sec-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:4px;}
+.sec-sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
+
+.prog-wrap{background:var(--dim);border-radius:100px;height:6px;overflow:hidden;margin:6px 0;}
+.prog-bar{height:100%;border-radius:100px;transition:width 0.5s ease;}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow);}
+.stat-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;line-height:1;}
+.stat-lbl{font-size:9px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:0.08em;}
+.stat-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;font-size:11.5px;min-width:500px;}
+th{background:var(--bg);padding:9px 8px;text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;border-bottom:2px solid var(--border2);border-right:1px solid var(--border);white-space:nowrap;}
+th:first-child{text-align:left;}
+td{padding:7px 8px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);text-align:center;vertical-align:middle;}
+td:first-child{text-align:left;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg);}
+
+.tc-ro{width:28px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;margin:0 auto;font-size:14px;}
+.tc-ro.done{color:var(--green);background:var(--green-soft);}
+.tc-ro.fail{color:var(--red);background:var(--red-soft);}
+.tk-ro{width:26px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;margin:0 auto;font-size:13px;}
+.tk-ro.done{color:var(--purple);background:var(--purple-soft);}
+
+.date-col{font-size:10px;color:var(--muted);font-weight:600;white-space:nowrap;min-width:70px;}
+.sticky-col{position:sticky;left:0;background:var(--card);z-index:2;border-right:2px solid var(--border2)!important;}
+tr:hover .sticky-col{background:var(--bg);}
+
+.sch-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.sch-row:last-child{border-bottom:none;}
+.sch-time{color:var(--purple);font-weight:600;width:118px;flex-shrink:0;font-size:10.5px;}
+.sch-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+
+.aff-card{background:linear-gradient(135deg,#f8f0ff,#fff0f8);border:1px solid #e8d5f5;border-radius:14px;padding:20px;text-align:center;margin-bottom:14px;}
+.aff-card p{font-family:'Playfair Display',serif;font-size:14px;line-height:1.6;color:var(--text);}
+.aff-card .asub{font-size:10px;color:var(--muted);margin-top:7px;}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px solid var(--border);}
+.legend span{display:flex;align-items:center;gap:4px;}
+
+.ro-tag{display:inline-flex;align-items:center;gap:5px;background:var(--blue-soft);color:var(--blue);font-size:9.5px;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:14px;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('home',this)">🏠 Overview</button>
+  <button class="nav-btn" onclick="showTab('habits',this)">✅ Habits</button>
+  <button class="nav-btn" onclick="showTab('schedule',this)">⏱️ Schedule</button>
+  <button class="nav-btn" onclick="showTab('mocks',this)">📝 Mocks</button>
+  <button class="nav-btn" onclick="showTab('chapters',this)">📖 Chapters</button>
+</nav>
+
+<!-- HOME -->
+<div id="tab-home" class="section active">
+  <div class="hero">
+    <div class="eyebrow">✦ Lipsi's Progress ✦</div>
+    <h1>The Lock In</h1>
+    <div class="hero-sub">10 April – 12 May 2026 · COEP 160+ · 32 Days</div>
+    <div class="countdown">
+      <div class="count-block"><div class="count-num" id="days-left">—</div><div class="count-lbl">Days Left</div></div>
+      <div class="count-block"><div class="count-num" id="days-done">—</div><div class="count-lbl">Done</div></div>
+      <div class="count-block"><div class="count-num" id="pct-done">—</div><div class="count-lbl">% Done</div></div>
+    </div>
+  </div>
+
+  <div class="viewer-banner">
+    <strong>👁️ You're viewing Lipsi's live progress</strong>
+    This updates automatically from her dashboard — real data, real effort.
+  </div>
+
+  <div style="padding:0 0;max-width:960px;margin:0 auto;">
+    <div class="ro-tag">👁️ Read Only — Live View</div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num" style="color:var(--purple)" id="s-habits">0</div><div class="stat-lbl">Perfect Days</div><div class="stat-sub">all habits ✓</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--gold)" id="s-mocks">0</div><div class="stat-lbl">Mocks Done</div><div class="stat-sub">of 30</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--teal)" id="s-chapters">0</div><div class="stat-lbl">Chapters</div><div class="stat-sub">of 53</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--pink)" id="s-gym">0</div><div class="stat-lbl">Gym Days</div><div class="stat-sub">of 32</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 Overall Progress</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Habit streak</div>
+      <div class="prog-wrap"><div class="prog-bar" id="p-habits" style="background:linear-gradient(90deg,var(--purple),var(--pink));width:0%"></div></div>
+      <div style="font-size:10px;color:var(--muted);margin:8px 0 4px;">Chapters covered</div>
+      <div class="prog-wrap"><div class="prog-bar" id="p-chapters" style="background:linear-gradient(90deg,var(--teal),var(--blue));width:0%"></div></div>
+      <div style="font-size:10px;color:var(--muted);margin:8px 0 4px;">Mocks completed</div>
+      <div class="prog-wrap"><div class="prog-bar" id="p-mocks" style="background:linear-gradient(90deg,var(--gold),var(--pink));width:0%"></div></div>
+    </div>
+    <div class="aff-card"><p id="home-aff"></p><div class="asub">✦ Her Affirmation Today ✦</div></div>
+  </div>
+</div>
+
+<!-- HABITS -->
+<div id="tab-habits" class="section">
+  <div class="sec-title">✅ Habit Tracker</div>
+  <div class="sec-sub">Her daily habits — rows are dates, columns are habits</div>
+  <div class="ro-tag">👁️ Read Only</div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="sticky-col" style="min-width:80px;">Date</th>
+            <th>🌅<br>Wake</th><th>📚<br>12h</th><th>📋<br>Routine</th><th>📖<br>Book</th><th>🙏<br>Aff.</th><th>🕌<br>Prayers</th><th>❓<br>200Qs</th><th>📑<br>3Ch.</th><th>🏋️<br>Gym</th>
+          </tr>
+        </thead>
+        <tbody id="habit-body"></tbody>
+      </table>
+    </div>
+    <div class="legend"><span><span style="color:var(--green)">✓</span> Done</span><span><span style="color:var(--red)">✗</span> Not done</span><span><span style="color:var(--dim)">—</span> Not marked</span></div>
+  </div>
+</div>
+
+<!-- SCHEDULE -->
+<div id="tab-schedule" class="section">
+  <div class="sec-title">⏱️ Daily Schedule</div>
+  <div class="sec-sub">Her study blocks — rows are dates, columns are time blocks</div>
+  <div class="ro-tag">👁️ Read Only</div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="sticky-col" style="min-width:80px;">Date</th>
+            <th>6–9AM</th><th>9:30–12</th><th>12:45–1:45</th><th>3–4PM</th><th>4–5PM<br>Gym</th><th>5–5:45<br>Prayer</th><th>5:45–7</th><th>7:45–12:20<br>Pomodoro</th>
+          </tr>
+        </thead>
+        <tbody id="sch-body"></tbody>
+      </table>
+    </div>
+    <div class="legend"><span><span style="color:var(--green)">✓</span> Done</span><span><span style="color:var(--red)">✗</span> Missed</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📋 Schedule Reference</div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--blue)"></div><div class="sch-time">6:00–9:00 AM</div><div>📚 Deep study block</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--pink)"></div><div class="sch-time">9:00–9:30 AM</div><div>🍳 Breakfast</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--blue)"></div><div class="sch-time">9:30–12:00 PM</div><div>📚 Study session</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--gold)"></div><div class="sch-time">12:00–12:45 PM</div><div>🛁 Bath + break</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--blue)"></div><div class="sch-time">12:45–1:45 PM</div><div>📚 Study block</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--pink)"></div><div class="sch-time">1:45–2:50 PM</div><div>🍱 Lunch</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--teal)"></div><div class="sch-time">2:50–3:00 PM</div><div>😴 Power nap</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--blue)"></div><div class="sch-time">3:00–4:00 PM</div><div>📚 Study block</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--pink)"></div><div class="sch-time">4:00–5:00 PM</div><div>🏋️ Gym</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--purple)"></div><div class="sch-time">5:00–5:45 PM</div><div>🙏 Prayers + Affirmations + Book</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--blue)"></div><div class="sch-time">5:45–7:00 PM</div><div>📚 Study block</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--pink)"></div><div class="sch-time">7:00–7:45 PM</div><div>🍽️ Dinner</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--purple)"></div><div class="sch-time">7:45–12:20 AM</div><div>🍅 Pomodoro night (50+5 repeat)</div></div>
+    <div class="sch-row"><div class="sch-dot" style="background:var(--pink)"></div><div class="sch-time">12:30 AM</div><div>😴 Sleep</div></div>
+  </div>
+</div>
+
+<!-- MOCKS -->
+<div id="tab-mocks" class="section">
+  <div class="sec-title">📝 Mock Test Log</div>
+  <div class="sec-sub">Her mock scores · Goal: 160+</div>
+  <div class="ro-tag">👁️ Read Only</div>
+  <div class="card" style="overflow-x:auto;">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">Avg: <span id="mock-avg" style="color:var(--gold);font-weight:700">—</span> &nbsp;|&nbsp; Best: <span id="mock-best" style="color:var(--teal);font-weight:700">—</span> &nbsp;|&nbsp; Done: <span id="mock-done" style="color:var(--purple);font-weight:700">0</span>/30</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Date</th><th>Total /200</th><th>Phy /50</th><th>Chem /50</th><th>Maths /100</th><th>Analysed</th></tr></thead>
+        <tbody id="mock-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CHAPTERS -->
+<div id="tab-chapters" class="section">
+  <div class="sec-title">📖 Chapter Checklist</div>
+  <div class="sec-sub"><span id="chap-count" style="color:var(--teal);font-weight:700">0 / 53</span> chapters fully done</div>
+  <div class="ro-tag">👁️ Read Only</div>
+  <div class="card">
+    <div class="prog-wrap" style="margin-bottom:14px;"><div class="prog-bar" id="chap-prog" style="background:linear-gradient(90deg,var(--teal),var(--blue));width:0%"></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:28px;">#</th>
+            <th class="sticky-col" style="min-width:130px;text-align:left;">Chapter</th>
+            <th>Brief<br>Idea</th><th>2025<br>PYQ</th><th>2024<br>PYQ</th><th>Digital<br>NB</th><th>Revision</th>
+          </tr>
+        </thead>
+        <tbody id="chap-body"></tbody>
+      </table>
+    </div>
+    <div class="legend"><span><span style="color:var(--purple)">✓</span> Done</span><span><span style="color:var(--dim)">○</span> Pending</span></div>
+  </div>
+</div>
+
+<script>
+const TOTAL=32;
+const START=new Date(2026,3,10);
+const END=new Date(2026,4,12);
+const PFX='lipsi2_';
+const HABIT_KEYS=['wake','study12','routine','selfhelp','affirmation','prayers','200q','3chap','gym'];
+const SCH_KEYS=['s1','s2','s3','s4','s5','s6','s7','s8'];
+const PHY=['Motion in 1D','Motion in 2D','Laws of Motion','Work & Energy','Rotational Motion','Gravitation','Properties of Matter','SHM','Waves','Thermal Properties','Thermodynamics','Kinetic Theory','Electric Charges','Electric Potential','Current Electricity','Magnetic Effects','Magnetism','EMI','AC Circuits','EM Waves','Ray Optics','Wave Optics','Dual Nature','Atoms & Nuclei'];
+const CHEM=['States of Matter','Atomic Structure','Chemical Bonding','Thermodynamics','Equilibrium','Redox Reactions','Hydrogen','s-Block','p-Block I','p-Block II','Organic Basics','Hydrocarbons','Environmental Chem','Solutions','Electrochemistry','Chemical Kinetics','Surface Chemistry','Coordination Compounds','Aldehydes & Ketones','Carboxylic Acids','Amines','Biomolecules'];
+const MATH=['Sets & Relations','Complex Numbers','Matrices','Determinants','Permutations','Probability','Limits','Differentiation','Integration','Differential Equations','Vectors','3D Geometry','Straight Lines','Circles','Conics','Trigonometry'];
+const ALL=[...PHY.map(n=>({name:n,sub:'phy'})),...CHEM.map(n=>({name:n,sub:'chem'})),...MATH.map(n=>({name:n,sub:'math'}))];
+const AFFS=['"I am the girl who chooses herself every single day. COEP is not a dream — it is already mine."','"Every formula I write is a step closer to my name on that list. I was made for this."','"I do not quit. I do not negotiate with laziness. I show up, every single day."','"160+ is already decided. I am just showing up to collect what belongs to me."','"The girl who studies at 6 AM when no one is watching — that is the girl who wins."','"Consistency over perfection. One block at a time. I will get there."','"My future self is watching. I will not let her down."','"Hard days are proof that I am doing something worth doing."'];
+
+function ld(k,d){try{const v=localStorage.getItem(PFX+k);return v!==null?JSON.parse(v):d;}catch(e){return d;}}
+function showTab(id,btn){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');}
+function getDates(){const a=[];for(let i=0;i<TOTAL;i++){const d=new Date(START);d.setDate(d.getDate()+i);a.push(d);}return a;}
+function fmtDate(d){const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];return `${DN[d.getDay()]} ${d.getDate()} ${d.getMonth()===3?'Apr':'May'}`;}
+function isToday(d){const t=new Date();return d.getDate()===t.getDate()&&d.getMonth()===t.getMonth();}
+function dk(d){return d.toISOString().slice(0,10);}
+
+function roCell(val){
+  const icons={blank:'—',done:'✓',fail:'✗'};
+  const div=document.createElement('div');
+  div.className=`tc-ro ${val||'blank'}`;
+  div.textContent=icons[val||'blank'];
+  const td=document.createElement('td');
+  td.appendChild(div);
+  return td;
+}
+function tkCell(val){
+  const div=document.createElement('div');
+  div.className=`tk-ro ${val?'done':''}`;
+  div.textContent=val?'✓':'○';
+  const td=document.createElement('td');
+  td.appendChild(div);
+  return td;
+}
+
+function buildHabits(){
+  const tbody=document.getElementById('habit-body');
+  tbody.innerHTML='';
+  getDates().forEach(d=>{
+    const row=document.createElement('tr');
+    if(isToday(d)) row.style.background='#fff8ff';
+    const dtd=document.createElement('td');
+    dtd.className='sticky-col date-col';
+    dtd.textContent=fmtDate(d);
+    if(isToday(d)) dtd.style.color='var(--purple)';
+    row.appendChild(dtd);
+    HABIT_KEYS.forEach(hk=>{
+      const data=ld('habit_'+hk,{});
+      row.appendChild(roCell(data[dk(d)]));
+    });
+    tbody.appendChild(row);
+  });
+}
+
+function buildSchedule(){
+  const tbody=document.getElementById('sch-body');
+  tbody.innerHTML='';
+  getDates().forEach(d=>{
+    const row=document.createElement('tr');
+    if(isToday(d)) row.style.background='#fff8ff';
+    const dtd=document.createElement('td');
+    dtd.className='sticky-col date-col';
+    dtd.textContent=fmtDate(d);
+    if(isToday(d)) dtd.style.color='var(--purple)';
+    row.appendChild(dtd);
+    SCH_KEYS.forEach(sk=>{
+      const data=ld('sch_'+sk,{});
+      row.appendChild(roCell(data[dk(d)]));
+    });
+    tbody.appendChild(row);
+  });
+}
+
+function buildMocks(){
+  const tbody=document.getElementById('mock-tbody');
+  tbody.innerHTML='';
+  const data=ld('mocks',{});
+  const aData=ld('mock_analysed',{});
+  let scores=[],done=0;
+  for(let i=1;i<=30;i++){
+    const m=data[i]||{};
+    const sc=parseInt(m.total)||0;
+    if(sc>0){scores.push(sc);done++;}
+    const row=document.createElement('tr');
+    const scStyle=sc>=160?'color:var(--teal);font-weight:700':sc>=130?'color:var(--gold);font-weight:700':sc>0?'color:var(--red);font-weight:700':'color:var(--dim)';
+    const icons={blank:'—',done:'✓',fail:'✗'};
+    const av=aData[i]||'blank';
+    const avStyle=av==='done'?'color:var(--green)':av==='fail'?'color:var(--red)':'color:var(--dim)';
+    row.innerHTML=`
+      <td style="color:var(--muted);font-size:10px">${i}</td>
+      <td style="color:var(--muted)">${m.date||'—'}</td>
+      <td style="${scStyle}">${sc||'—'}</td>
+      <td style="color:var(--muted)">${m.phy||'—'}</td>
+      <td style="color:var(--muted)">${m.chem||'—'}</td>
+      <td style="color:var(--muted)">${m.maths||'—'}</td>
+      <td style="${avStyle};text-align:center;font-size:15px">${icons[av]}</td>
+    `;
+    tbody.appendChild(row);
+  }
+  document.getElementById('mock-done').textContent=done;
+  if(scores.length){document.getElementById('mock-avg').textContent=Math.round(scores.reduce((a,b)=>a+b)/scores.length);document.getElementById('mock-best').textContent=Math.max(...scores);}
+  return done;
+}
+
+function buildChapters(){
+  const tbody=document.getElementById('chap-body');
+  tbody.innerHTML='';
+  const COLS=['brief','pyq25','pyq24','nb','revision'];
+  let total=0;
+  ALL.forEach((ch,i)=>{
+    const data=ld('chap_'+i,{});
+    const allDone=COLS.every(c=>data[c]);
+    if(allDone) total++;
+    const row=document.createElement('tr');
+    if(allDone) row.style.background='var(--green-soft)';
+    const numTd=document.createElement('td');
+    numTd.textContent=i+1;numTd.style.cssText='color:var(--muted);font-size:10px';
+    row.appendChild(numTd);
+    const nameTd=document.createElement('td');
+    nameTd.className='sticky-col';
+    nameTd.style.fontSize='11px';
+    const badge=document.createElement('span');
+    badge.style.cssText='font-size:8px;font-weight:700;padding:1px 5px;border-radius:100px;margin-right:5px;text-transform:uppercase;';
+    if(ch.sub==='phy'){badge.style.background='var(--blue-soft)';badge.style.color='var(--blue)';}
+    else if(ch.sub==='chem'){badge.style.background='var(--teal-soft)';badge.style.color='var(--teal)';}
+    else{badge.style.background='var(--gold-soft)';badge.style.color='var(--gold)';}
+    badge.textContent=ch.sub==='phy'?'P':ch.sub==='chem'?'C':'M';
+    nameTd.appendChild(badge);
+    nameTd.appendChild(document.createTextNode(ch.name));
+    if(allDone) nameTd.style.color='var(--green)';
+    row.appendChild(nameTd);
+    COLS.forEach(col=>row.appendChild(tkCell(data[col])));
+    tbody.appendChild(row);
+  });
+  document.getElementById('chap-count').textContent=total+' / 53';
+  document.getElementById('chap-prog').style.width=(total/53*100)+'%';
+  return total;
+}
+
+function initCountdown(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const done=Math.max(0,Math.min(TOTAL,Math.round((today-START)/864e5)));
+  const left=Math.max(0,Math.round((END-today)/864e5));
+  const pct=Math.min(100,Math.round(done/TOTAL*100));
+  document.getElementById('days-left').textContent=left;
+  document.getElementById('days-done').textContent=done;
+  document.getElementById('pct-done').textContent=pct+'%';
+}
+
+function updateHome(){
+  const gymDone=getDates().filter(d=>ld('habit_gym',{})[dk(d)]==='done').length;
+  const mockDone=Object.values(ld('mocks',{})).filter(m=>parseInt(m.total)>0).length;
+  const COLS=['brief','pyq25','pyq24','nb','revision'];
+  const chapDone=ALL.filter((_,i)=>{const d=ld('chap_'+i,{});return COLS.every(c=>d[c]);}).length;
+  const perfectDays=getDates().filter(d=>{const key=dk(d);return HABIT_KEYS.every(hk=>ld('habit_'+hk,{})[key]==='done');}).length;
+  document.getElementById('s-habits').textContent=perfectDays;
+  document.getElementById('s-mocks').textContent=mockDone;
+  document.getElementById('s-chapters').textContent=chapDone;
+  document.getElementById('s-gym').textContent=gymDone;
+  document.getElementById('p-habits').style.width=(perfectDays/TOTAL*100)+'%';
+  document.getElementById('p-chapters').style.width=(chapDone/53*100)+'%';
+  document.getElementById('p-mocks').style.width=(mockDone/30*100)+'%';
+}
+
+initCountdown();
+document.getElementById('home-aff').textContent=AFFS[new Date().getDate()%AFFS.length];
+buildHabits();
+buildSchedule();
+buildMocks();
+buildChapters();
+updateHome();
+</script>
+</body>
+</html>
